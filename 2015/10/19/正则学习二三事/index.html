@@ -43,7 +43,7 @@
 <meta property="og:url" content="http://vicky01200059.com/2015/10/19/正则学习二三事/index.html">
 <meta property="og:site_name" content="Vicky's Blog">
 <meta property="og:description" content="正则一直是我一大痛点，一直都想解决这个问题，但是奈何每次看到那么多符号就发蒙，所以就一直拖下去了。直到最近总是被别人问到如何在hql中使用rlike查询符合特定规则的字段，然后各种不会，结果被鄙视的一塌糊涂，无奈，这才静下心来慢慢研究。以前看正则就是一堆符号，代表各个意思，如\d表示数字，\d+表示一个或者多个连续数字，单看每个规则都可以理解，除了组合，但是实际使用时真的很难组织到一起。归根结底还">
-<meta property="og:updated_time" content="2015-10-20T05:09:16.491Z">
+<meta property="og:updated_time" content="2015-10-20T07:42:34.395Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="正则学习二三事">
 <meta name="twitter:description" content="正则一直是我一大痛点，一直都想解决这个问题，但是奈何每次看到那么多符号就发蒙，所以就一直拖下去了。直到最近总是被别人问到如何在hql中使用rlike查询符合特定规则的字段，然后各种不会，结果被鄙视的一塌糊涂，无奈，这才静下心来慢慢研究。以前看正则就是一堆符号，代表各个意思，如\d表示数字，\d+表示一个或者多个连续数字，单看每个规则都可以理解，除了组合，但是实际使用时真的很难组织到一起。归根结底还">
@@ -52,7 +52,7 @@
 <script type="text/javascript" id="hexo.configuration">
   var CONFIG = {
     scheme: 'Mist',
-    sidebar: 'hide'
+    sidebar: 'post'
   };
 </script>
 
@@ -225,49 +225,89 @@
 
       
         <span itemprop="articleBody"><p>正则一直是我一大痛点，一直都想解决这个问题，但是奈何每次看到那么多符号就发蒙，所以就一直拖下去了。直到最近总是被别人问到如何在hql中使用rlike查询符合特定规则的字段，然后各种不会，结果被鄙视的一塌糊涂，无奈，这才静下心来慢慢研究。<br>以前看正则就是一堆符号，代表各个意思，如\d表示数字，\d+表示一个或者多个连续数字，单看每个规则都可以理解，除了组合，但是实际使用时真的很难组织到一起。归根结底还是因为对这些符号的理解不够深入。所以正则还是得多写，推荐一个在线练习的网站<a href="http://regex.alf.nu/" target="_blank" rel="external">RegexGolf</a>。好了，下面写写自己学习正则的一些总结吧，希望能够帮助到别人，也帮助自己总结总结。</p>
-<h4 id="正则的基础知识："><strong>正则的基础知识：</strong></h4><ul>
-<li><p>字面值<br>正则表达式由只代表自身的字面值和代表特定含义的元字符组成。 只代表自身的字面值指的是普通的字符，如abcde，特殊含义的元字符包括：<br> | 字符| 含义 |<br> :|————-|:<br> |\ |反斜线字符 |<br> |\0n |带有八进制值 0 的字符 n (0 &lt;= n &lt;= 7) |<br> |\0nn |带有八进制值 0 的字符 nn (0 &lt;= n &lt;= 7) |<br> |\0mnn |带有八进制值 0 的字符 mnn（0 &lt;= m &lt;= 3、0 &lt;= n &lt;= 7） |<br> |\xhh |带有十六进制值 0x 的字符 hh |<br> |\uhhhh |带有十六进制值 0x 的字符 hhhh |<br> |\t |制表符 (‘\u0009’) |<br> |\n |新行（换行）符 (‘\u000A’) |<br> |\r |回车符 (‘\u000D’) |<br> |\f |换页符 (‘\u000C’) |<br> |\a |报警 (bell) 符 (‘\u0007’) |<br> |\e |转义符 (‘\u001B’) |<br> |\cx |对应于 x 的控制符 |</p>
-</li>
-<li><p>字符类<br>字符类是字符在方括号中的集合。表示“找到集合里任意一个字符“。例如：<br> | 字符| 含义 |<br> :|————-|:<br>  | [abc]     | a、b 或 c（简单类）     |<br> | [^abc]     | 任何字符，除了 a、b 或 c（否定）     |<br> | [a-zA-Z]     | a 到 z 或 A 到 Z，两头的字母包括在内（范围）     |<br> | [a-d[m-p]]     | a 到 d 或 m 到 p：[a-dm-p]（并集）     |<br> | [a-z&amp;&amp;[def]]     | d、e 或 f（交集）     |<br> | [a-z&amp;&amp;[^bc]]     | a 到 z，除了 b 和 c：[ad-z]（减去）     |<br> | [a-z&amp;&amp;[^m-p]]     | a 到 z，而非 m 到 p：[a-lq-z]（减去）     |<br>从上表可以看出<strong>[]</strong>里面可进行并集/交集/差集操作。对于字符范围是根据ASCII值的大小来的，例如[A-z]也是可以的，甚至能够匹配[，但是完全不建议如此使用，推荐使用的字符范围：[0-9]/[a-z]/[A-Z]。<br>字符类还有一些预定义的字符类：<br> | 字符| 含义 |<br> :|————-|:<br> |. 任何字符（与行结束符可能匹配也可能不匹配） |<br> |\d |数字：[0-9] |<br> |\D |非数字： [^0-9] |<br> |\s |空白字符：[ \t\n\x0B\f\r] |<br> |\S |非空白字符：[^\s] |<br> |\w |单词字符：[a-zA-Z_0-9] |<br> |\W |非单词字符：[^\w] |<br>使用上面的预定义字符类能够更加方便的表示字符范围。需要牢记。<br><strong>注意</strong>： 区间是字符的区间，不是数字的区间。正则表达式[1-31]表示“找到一个1或一个2或一个3”，不是“找到一个从1到31的整数”。</p>
-</li>
-<li><p>乘法器</p>
-<p>  | 字符| 含义 |<br> :|————-|:<br> |X? |X，一次或一次也没有 |<br> |X* |X，零次或多次 |<br> |X+ |X，一次或多次 |<br> |X{n}| X，恰好 n 次 |<br> |X{n,} |X，至少 n 次 |<br> |X{n,m} |X，至少 n 次，但是不超过 m 次 |</p>
-<p> X可以使一个普通字面值，如a+：一个或多个a，也可以是一个字符类，如[abc]{2}，表示a/b/c后跟a/b/c。<br> 值得注意的是优先选择更长的匹配，因为乘法器是贪婪的。如果你输入的文本是I had an aaaaawful day，该正则表达式就会在aaaaawful中匹配到aaaaa。不会在第三个a后就停止匹配。<br> 乘法器是贪婪的，但它不会忽略一个更好的匹配。如果你的输入文本为I had an aaawful daaaaay，之后这个正则表达式会在第一次的匹配中于aaawful找到aaa。只有在你说“给我找到另一个匹配”的时候，它才会继续搜索然后在daaaaay中找到aaaaa。<br> 惰性：<br> 正则表达式<em>“.</em>“<em>表示“找到一个双引号，接着找到尽可能多的字符，最后再找到一个双引号”。注意一下被.</em>匹配的内部字符，很可能包含多个双引号。这通常不是非常有用。乘法器可通过追加问号<strong>（?）</strong>来实现<strong>惰性</strong>。<em>“.</em>?”*表示“匹配一个双引号，跟着一个尽可能少的字符，再跟着一个双引号”。</p>
-</li>
-<li><p>分支<br>可以使用管道符号来实现匹配多种选择。<br>  | 字符| 含义 |<br> :|————-|:<br> |X\|Y| X或者Y|</p>
-</li>
-<li><p>组合<br>可以使用圆括号来组合表达式。例：<br>在一周中找到一天，使用<strong>(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day</strong>，这里如果把小括号或者中括号，结果是完全不一样的，因为中括号是字符类，即里面的Mon并不是完全匹配Mon，而是只要匹配M/o/n其中一个即可。<br>同时组合后面还可跟上乘法器，如：<strong>\w+(\s+\w+)*</strong>代表“找到一个或多个单词，它们以空格隔开”。</p>
-</li>
-<li><p>边界<br>边界分成：单词边界，行边界，文本边界</p>
+<h4 id="正则的基础知识："><strong>正则的基础知识：</strong></h4><h5 id="字面值"><strong>字面值</strong></h5><p>正则表达式由只代表自身的字面值和代表特定含义的元字符组成。 只代表自身的字面值指的是普通的字符，如abcde，特殊含义的元字符包括：</p>
+<pre><code>|<span class="string"> 字符</span>|<span class="string"> 含义 </span>|
+:|<span class="string">-------------</span>|<span class="string">:
+</span>|<span class="string">\\ </span>|<span class="string">反斜线字符 </span>|
+|<span class="string">\0n </span>|<span class="string">带有八进制值 0 的字符 n (0 &lt;= n &lt;= 7) </span>|
+|<span class="string">\0nn </span>|<span class="string">带有八进制值 0 的字符 nn (0 &lt;= n &lt;= 7) </span>|
+|<span class="string">\0mnn </span>|<span class="string">带有八进制值 0 的字符 mnn（0 &lt;= m &lt;= 3、0 &lt;= n &lt;= 7） </span>|
+|<span class="string">\xhh </span>|<span class="string">带有十六进制值 0x 的字符 hh </span>|
+|<span class="string">\uhhhh </span>|<span class="string">带有十六进制值 0x 的字符 hhhh </span>|
+|<span class="string">\t </span>|<span class="string">制表符 ('\u0009') </span>|
+|<span class="string">\n </span>|<span class="string">新行（换行）符 ('\u000A') </span>|
+|<span class="string">\r </span>|<span class="string">回车符 ('\u000D') </span>|
+|<span class="string">\f </span>|<span class="string">换页符 ('\u000C') </span>|
+|<span class="string">\a </span>|<span class="string">报警 (bell) 符 ('\u0007') </span>|
+|<span class="string">\e </span>|<span class="string">转义符 ('\u001B') </span>|
+|<span class="string">\cx </span>|<span class="string">对应于 x 的控制符 </span>|
+</code></pre><h5 id="字符类"><strong>字符类</strong></h5><p> 字符类是字符在方括号中的集合。表示“找到集合里任意一个字符“。例如：</p>
+<pre><code>|<span class="string"> 字符</span>|<span class="string"> 含义 </span>|
+:|<span class="string">-------------</span>|<span class="string">:
+ </span>|<span class="string"> [abc]     </span>|<span class="string"> a、b 或 c（简单类）     </span>|<span class="string"> 
+</span>|<span class="string"> [^abc]     </span>|<span class="string"> 任何字符，除了 a、b 或 c（否定）     </span>|<span class="string"> 
+</span>|<span class="string"> [a-zA-Z]     </span>|<span class="string"> a 到 z 或 A 到 Z，两头的字母包括在内（范围）     </span>|<span class="string"> 
+</span>|<span class="string"> [a-d[m-p]]     </span>|<span class="string"> a 到 d 或 m 到 p：[a-dm-p]（并集）     </span>|<span class="string"> 
+</span>|<span class="string"> [a-z&amp;&amp;[def]]     </span>|<span class="string"> d、e 或 f（交集）     </span>|<span class="string"> 
+</span>|<span class="string"> [a-z&amp;&amp;[^bc]]     </span>|<span class="string"> a 到 z，除了 b 和 c：[ad-z]（减去）     </span>|<span class="string"> 
+</span>|<span class="string"> [a-z&amp;&amp;[^m-p]]     </span>|<span class="string"> a 到 z，而非 m 到 p：[a-lq-z]（减去）     </span>|<span class="string"> </span>
+</code></pre><p>从上表可以看出<strong>[]</strong>里面可进行并集/交集/差集操作。对于字符范围是根据ASCII值的大小来的，例如[A-z]也是可以的，甚至能够匹配[，但是完全不建议如此使用，推荐使用的字符范围：[0-9]/[a-z]/[A-Z]。<br>字符类还有一些预定义的字符类：</p>
+<pre><code>|<span class="string"> 字符</span>|<span class="string"> 含义 </span>|
+:|<span class="string">-------------</span>|<span class="string">:
+</span>|<span class="string">. 任何字符（与行结束符可能匹配也可能不匹配） </span>|
+|<span class="string">\d </span>|<span class="string">数字：[0-9] </span>|
+|<span class="string">\D </span>|<span class="string">非数字： [^0-9] </span>|
+|<span class="string">\s </span>|<span class="string">空白字符：[ \t\n\x0B\f\r] </span>|
+|<span class="string">\S </span>|<span class="string">非空白字符：[^\s] </span>|
+|<span class="string">\w </span>|<span class="string">单词字符：[a-zA-Z_0-9] </span>|
+|<span class="string">\W </span>|<span class="string">非单词字符：[^\w] </span>|
+</code></pre><p>使用上面的预定义字符类能够更加方便的表示字符范围。需要牢记。<br><strong>注意</strong>： 区间是字符的区间，不是数字的区间。正则表达式[1-31]表示“找到一个1或一个2或一个3”，不是“找到一个从1到31的整数”。</p>
+<h5 id="乘法器"><strong>乘法器</strong></h5><pre><code> |<span class="string"> 字符</span>|<span class="string"> 含义 </span>|
+:|<span class="string">-------------</span>|<span class="string">:
+</span>|<span class="string">X? </span>|<span class="string">X，一次或一次也没有 </span>|
+|<span class="string">X* </span>|<span class="string">X，零次或多次 </span>|
+|<span class="string">X+ </span>|<span class="string">X，一次或多次 </span>|
+|<span class="string">X{n}</span>|<span class="string"> X，恰好 n 次 </span>|
+|<span class="string">X{n,} </span>|<span class="string">X，至少 n 次 </span>|
+|<span class="string">X{n,m} </span>|<span class="string">X，至少 n 次，但是不超过 m 次 </span>|
+</code></pre><p>X可以使一个普通字面值，如a+：一个或多个a，也可以是一个字符类，如[abc]{2}，表示a/b/c后跟a/b/c。<br>值得注意的是优先选择更长的匹配，因为乘法器是贪婪的。如果你输入的文本是I had an aaaaawful day，该正则表达式就会在aaaaawful中匹配到aaaaa。不会在第三个a后就停止匹配。<br>乘法器是贪婪的，但它不会忽略一个更好的匹配。如果你的输入文本为I had an aaawful daaaaay，之后这个正则表达式会在第一次的匹配中于aaawful找到aaa。只有在你说“给我找到另一个匹配”的时候，它才会继续搜索然后在daaaaay中找到aaaaa。<br>惰性：<br>正则表达式<em>“.</em>“<em>表示“找到一个双引号，接着找到尽可能多的字符，最后再找到一个双引号”。注意一下被.</em>匹配的内部字符，很可能包含多个双引号。这通常不是非常有用。乘法器可通过追加问号<strong>（?）</strong>来实现<strong>惰性</strong>。<em>“.</em>?”*表示“匹配一个双引号，跟着一个尽可能少的字符，再跟着一个双引号”。</p>
+<h5 id="分支"><strong>分支</strong></h5><p>可以使用管道符号来实现匹配多种选择。</p>
+<pre><code> | 字符| 含义 |
+<span class="symbol">:|-------------|</span><span class="symbol">:</span>
+|<span class="constant">X</span>\\|<span class="constant">Y</span>| <span class="constant">X</span>或者<span class="constant">Y</span>|
+</code></pre><h5 id="组合"><strong>组合</strong></h5><p>可以使用圆括号来组合表达式。例：<br>在一周中找到一天，使用<strong>(Mon|Tues|Wednes|Thurs|Fri|Satur|Sun)day</strong>，这里如果把小括号或者中括号，结果是完全不一样的，因为中括号是字符类，即里面的Mon并不是完全匹配Mon，而是只要匹配M/o/n其中一个即可。<br>同时组合后面还可跟上乘法器，如：<strong>\w+(\s+\w+)*</strong>代表“找到一个或多个单词，它们以空格隔开”。</p>
+<h5 id="边界"><strong>边界</strong></h5><p>边界分成：单词边界，行边界，文本边界</p>
 <ol>
 <li>单词边界<br>单词边界是一个单词字符和非单词字符之间的位置。记住，一个单词字符是\w，它是[0-9A-Za-z<em>]，一个非单词字符是\W，也就是[^0-9A-Za-z</em>]。<br>文本的开头和结尾总是当作单词边界。<br>输入的文本<strong>it’s a cat</strong>有八个单词边界，分别为：文本开头-i，t-‘，’-s，s-空格，空格-a，a-空格，空格-c，t-文本结尾。</li>
 <li>行边界<br>每一块文本会分解成一个或多个行，用换行符分隔。<br>注意文本不是以换行符结束，而是以行结束。然而，任何行，包括最后一行，可以包含零个字符。<br>起始行位置是在一个换行符和下一行的第一个字符之间。与单词边界一样，在文本的开头也算作一个起始的行。结束行位置是在行的最后一个字符和换行符之间。与单词边界一样，文本结束也算作行结束。</li>
-<li><p>文本边界<br>很多实现提供一个标记，通过改变它来改变^和$的含义。从“行开始”和“行结束”变成“文本开始”和“文本结束”。其它的一些实现提供单独的元字符\A和\z来达到这个目的。</p>
-<p>一些表示边界的符号：</p>
+<li><p>文本边界<br>很多实现提供一个标记，通过改变它来改变^和$的含义。从“行开始”和“行结束”变成“文本开始”和“文本结束”。其它的一些实现提供单独的元字符\A和\z来达到这个目的。<br>一些表示边界的符号：</p>
 <p>| 字符| 含义 |<br>:|————-|:<br>|    ^| 行的开头|<br>|$| 行的结尾 |<br>|\b |单词边界 |<br>|\B |非单词边界 |<br>|\A |输入的开头 |<br>|\G |上一个匹配的结尾 |<br>|\Z |输入的结尾，仅用于最后的结束符（如果有的话） |<br>|\z |输入的结尾 |<br>其中^$是最常用的两个边界分隔符。</p>
 </li>
 </ol>
-</li>
-</ul>
 <h4 id="捕获和替换："><strong>捕获和替换：</strong></h4><ol>
-<li><p>捕获组<br>（）在正则中被用来表示组，同时也可以用来捕获匹配上的子串，可以拥有多个捕获组，它们甚至可以嵌套使用，捕获组从左到右进行编号，只要计算左圆括号。例如：<br>对于表达式：<strong>(\w+) had a ((\w+) \w+)</strong>，文本是I had a nice day，那么</p>
-<ul>
-<li>捕获组1是I。</li>
-<li>捕获组2是nice day。</li>
-<li>捕获组3是nice。</li>
-<li>捕获组0是I had a nice day（根据具体实现不同）</li>
-</ul>
-<p>如果表达式使用了两个捕获组，但是只捕获到一组，那么组2是空字符串。引用捕获组使用+组序号，如\1表示引用第一个捕获组。</p>
-</li>
+<li>捕获组</li>
+</ol>
+<p>()在正则中被用来表示组，同时也可以用来捕获匹配上的子串，可以拥有多个捕获组，它们甚至可以嵌套使用，捕获组从左到右进行编号，只要计算左圆括号。例如：<br>对于表达式：<strong>(\w+) had a ((\w+) \w+)</strong>，文本是I had a nice day，那么</p>
+<pre><code>-<span class="ruby"> 捕获组<span class="number">1</span>是<span class="constant">I</span>。
+</span>-<span class="ruby"> 捕获组<span class="number">2</span>是nice day。
+</span>-<span class="ruby"> 捕获组<span class="number">3</span>是nice。
+</span>-<span class="ruby"> 捕获组<span class="number">0</span>是<span class="constant">I</span> had a nice day（根据具体实现不同）</span>
+</code></pre><p>如果表达式使用了两个捕获组，但是只捕获到一组，那么组2是空字符串。引用捕获组使用+组序号，如\1表示引用第一个捕获组。</p>
+<ol>
 <li>后向引用<br>可以在同样的表达式中引用同一个捕获组，这称为后向引用。<br>例：表达式[abc]{2}表示“匹配aa或ab或ac or ba或bb或bc或ca或cb或cc”，但是表达式([abc])\1表示“匹配aa或bb或cc”。</li>
 </ol>
 <p>以上就是正则的全部知识，其实了解正则的知识点很简单，但是真要应用到实际中还是需要通过大量的练习才能做到熟练使用。</p>
 <h5 id="实际案例"><strong>实际案例</strong></h5><ol>
-<li>压缩CSS文件，去掉CSS文件中的换行以及空格<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">工具：Notepad++  查找：([&#123;;])<span class="string">\s+</span>  替换：<span class="string">\1</span></span><br></pre></td></tr></table></figure>
+<li><p>压缩CSS文件，去掉CSS文件中的换行以及空格</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">工具：Notepad++  查找：([&#123;;])<span class="string">\s+</span>  替换：<span class="string">\1</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>替换文件中连续出现的#，为其后面添加一个空格，例：####你好-&gt;#### 你好</p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">工具：Notepad++  查找：([<span class="preprocessor">#]+)  替换：\<span class="number">1</span> (<span class="number">1</span>后面有个空格)</span></span><br></pre></td></tr></table></figure>
 </li>
 </ol>
 <p>以上案例会不断更新，已记录一些自己对正则使用的经历。</p>
-<h4 id="参考文章"><strong>参考文章</strong></h4><p><a href="http://doslin.com/regular%20expressions/2014/03/11/learn-regular-expressions-in-about-55-minutes.html" target="_blank" rel="external">55分钟学会正则表达式(译)</a><br>JDK API文档</p>
+<h4 id="参考文章"><strong>参考文章</strong></h4><p><a href="http://doslin.com/regular%20expressions/2014/03/11/learn-regular-expressions-in-about-55-minutes.html" target="_blank" rel="external">55分钟学会正则表达式(译)</a></p>
+<p>JDK API文档</p>
 </span>
       
     </div>
@@ -411,7 +451,7 @@
           <div class="post-toc">
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#正则的基础知识："><span class="nav-number">1.</span> <span class="nav-text">正则的基础知识：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#捕获和替换："><span class="nav-number">2.</span> <span class="nav-text">捕获和替换：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实际案例"><span class="nav-number">2.1.</span> <span class="nav-text">实际案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#正则的基础知识："><span class="nav-number">1.</span> <span class="nav-text">正则的基础知识：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#字面值"><span class="nav-number">1.1.</span> <span class="nav-text">字面值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#字符类"><span class="nav-number">1.2.</span> <span class="nav-text">字符类</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#乘法器"><span class="nav-number">1.3.</span> <span class="nav-text">乘法器</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#分支"><span class="nav-number">1.4.</span> <span class="nav-text">分支</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#组合"><span class="nav-number">1.5.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#边界"><span class="nav-number">1.6.</span> <span class="nav-text">边界</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#捕获和替换："><span class="nav-number">2.</span> <span class="nav-text">捕获和替换：</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#实际案例"><span class="nav-number">2.1.</span> <span class="nav-text">实际案例</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
             
           </div>
           <div class="post-toc-indicator-bottom post-toc-indicator"></div>
